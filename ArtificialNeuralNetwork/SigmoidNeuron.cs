@@ -10,6 +10,8 @@ namespace ArtificialNeuralNetwork
 	{
 		public float Output { get; private set; }
 		public float Bias { get; set; }
+		public float Delta { get; set; }
+
 		public List<Input> Inputs { get; set; }
 
 		public SigmoidNeuron()
@@ -47,9 +49,12 @@ namespace ArtificialNeuralNetwork
 
 		public void BackPropagate(float targetValue)
 		{
+			var error = SigmoidDerivativeFunction(Output) * (Output - targetValue);
+		}
 
-
-			var error = SigmoidDerivativeFunction(targetValue) * (Output - targetValue);
+		public void BackPropagate(IEnumerable<SigmoidNeuron> previous)
+		{
+			var error = SigmoidDerivativeFunction(Output) * 
 		}
 
 		private static float SigmoidFunction(float value)
