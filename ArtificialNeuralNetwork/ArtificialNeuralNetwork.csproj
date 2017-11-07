@@ -48,6 +48,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ILayer.cs" />
     <Compile Include="INeuron.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="InputLayer.cs" />
     <Compile Include="InputNeuron.cs" />
     <Compile Include="Layer.cs" />

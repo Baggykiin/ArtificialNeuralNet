@@ -70,7 +70,23 @@ namespace ArtificialNeuralNetwork
 				Run(training.Inputs);
 
 				var outcome = OutputLayer.Outputs();
+
+				var nablaBias = new float[Layers.Length][][];
+				var nablaWeight = new float[Layers.Length][];
+
+				// Start at the last layer, progressively moving forward, calculating ∇b and ∇w.
+				for (var i = Layers.Length - 1; i >= 0; i--)
+				{
+					var result = BackPropagate();
+
+
+				}
 			}
+		}
+
+		private void BackPropagate()
+		{
+			
 		}
 	}
 

@@ -10,7 +10,7 @@ namespace ArtificialNeuralNetwork
 	{
 		public float Output { get; private set; }
 		public float Bias { get; set; }
-		public Dictionary<INeuron, float> Weights { get; set; }
+		public List<Input> Inputs { get; set; }
 
 		public SigmoidNeuron()
 		{
@@ -20,38 +20,51 @@ namespace ArtificialNeuralNetwork
 		/// <summary>
 		/// Initialises the neuron with random weights and bias.
 		/// </summary>
-		public void InitialiseRandom(IEnumerable<INeuron> inputs)
+		public void InitialiseRandom(IEnumerable<INeuron> inputNeurons)
 		{
-			Weights = inputs.ToDictionary(input => input, _ => (float)RngProvider.Current.RandomNormal());
+			Inputs = inputNeurons.Select(neuron => new Input(neuron, (float)RngProvider.Current.RandomNormal())).ToList();
 			Bias = (float)RngProvider.Current.RandomNormal();
 		}
 
 		/// <summary>
 		/// Initialises the neuron with the given weights and bias.
 		/// </summary>
-		public void Initialise(IEnumerable<(INeuron neuron, float weight)> inputs, float bias)
+		public void Initialise(IEnumerable<Input> inputs, float bias)
 		{
-			Weights = inputs.ToDictionary(pair => pair.neuron, pair => pair.weight);
+			Inputs = inputs.ToList();
 			Bias = bias;
 		}
 
+		/// <summary>
+		/// Calculates the output of this neuron according to the given inputs.
+		/// </summary>
 		public void ProcessInput()
 		{
-			var weightedInputs = Weights.Select(p => p.Key.Output * p.Value);
-			var sum = weightedInputs.Sum();
+			var sum = Inputs.Sum(i => i.WeightedValue);
 			var biased = sum + Bias;
-			Output = Sigmoid(biased);
-			;
+			Output = SigmoidFunction(biased);
 		}
 
-		private static float Sigmoid(float value)
+		public void BackPropagate(float targetValue)
+		{
+
+
+			var error = SigmoidDerivativeFunction(targetValue) * (Output - targetValue);
+		}
+
+		private static float SigmoidFunction(float value)
 		{
 			return 1.0f / (1.0f + (float)Math.Exp(-value));
 		}
 
+		private static float SigmoidDerivativeFunction(float value)
+		{
+			return value * (1.0f - value);
+		}
+
 		public override string ToString()
 		{
-			return $"SigmoidNeuron(out: {Output:F} - bias: {Bias:F} - in: {Weights.Count}x)";
+			return $"SigmoidNeuron(out: {Output:F} - bias: {Bias:F} - in: {Inputs.Count}x)";
 		}
 	}
 }
