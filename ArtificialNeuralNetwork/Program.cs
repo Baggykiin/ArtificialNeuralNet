@@ -10,6 +10,12 @@ namespace ArtificialNeuralNetwork
 	{
 		static void Main(string[] args)
 		{
+			var network = new Network(2, 1);
+			network.InitialiseRandom();
+
+			network.InputLayer.Load(1, 0.5f);
+
+			network.Run();
 		}
 	}
 }
