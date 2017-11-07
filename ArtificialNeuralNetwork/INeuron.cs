@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArtificialNeuralNetwork
 {
-	interface INeuron
+	public interface INeuron
 	{
 		float Output { get; }
 

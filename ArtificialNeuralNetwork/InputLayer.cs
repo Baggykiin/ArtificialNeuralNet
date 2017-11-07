@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace ArtificialNeuralNetwork
 {
-	internal class InputLayer : ILayer
+	public class InputLayer : ILayer
 	{
 		private readonly List<InputNeuron> _neurons = new List<InputNeuron>();
 		public IEnumerable<INeuron> Neurons => _neurons;

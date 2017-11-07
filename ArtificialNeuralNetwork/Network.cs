@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArtificialNeuralNetwork
 {
-	class Network
+	public class Network
 	{
 		public ILayer[] Layers { get; }
 		public InputLayer InputLayer => (InputLayer)Layers.First();
@@ -43,22 +43,27 @@ namespace ArtificialNeuralNetwork
 			Run();
 		}
 
-		public void StochasticGradientDescent(Training[] trainingData, int epochCount, int miniBatchSize, int learningRate)
+		public void StochasticGradientDescent(IEnumerable<ITraining> trainingData, int epochCount, int miniBatchSize, int learningRate)
+		{
+			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, learningRate);
+		}
+
+		public void StochasticGradientDescent(ITraining[] trainingData, int epochCount, int miniBatchSize, int learningRate)
 		{
 			for (var i = 0; i < epochCount; i++)
 			{
 				// Create a new mini-batch by randomly selecting some training data.
-				var miniBatch = new List<Training>();
+				var miniBatch = new List<ITraining>();
 				for (var j = 0; j < miniBatchSize; j++)
 				{
 					miniBatch.Add(trainingData[RngProvider.Current.Next(trainingData.Length)]);
 				}
-
-
+				;
+				Train(miniBatch);
 			}
 		}
 
-		private void Train(List<Training> miniBatch)
+		private void Train(List<ITraining> miniBatch)
 		{
 			foreach (var training in miniBatch)
 			{
@@ -69,9 +74,9 @@ namespace ArtificialNeuralNetwork
 		}
 	}
 
-	internal class Training
+	public interface ITraining
 	{
-		public IEnumerable<float> Inputs;
-		public IEnumerable<float> DesiredOutput;
+		List<float> Inputs { get; }
+		List<float> DesiredOutput { get; }
 	}
 }

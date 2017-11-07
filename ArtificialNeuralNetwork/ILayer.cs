@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ArtificialNeuralNetwork
 {
-	internal interface ILayer
+	public interface ILayer
 	{
 		IEnumerable<INeuron> Neurons { get; }
 

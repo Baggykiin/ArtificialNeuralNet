@@ -48,5 +48,10 @@ namespace ArtificialNeuralNetwork
 		{
 			return 1.0f / (1.0f + (float)Math.Exp(-value));
 		}
+
+		public override string ToString()
+		{
+			return $"SigmoidNeuron(out: {Output:F} - bias: {Bias:F} - in: {Weights.Count}x)";
+		}
 	}
 }

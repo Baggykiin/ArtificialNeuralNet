@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArtificialNeuralNetwork
 {
-	class Layer : ILayer
+	public class Layer : ILayer
 	{
 		private readonly List<SigmoidNeuron> _neurons = new List<SigmoidNeuron>();
 		public IEnumerable<INeuron> Neurons => _neurons;
