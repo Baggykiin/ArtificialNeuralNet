@@ -29,6 +29,15 @@ namespace ArtificialNeuralNetwork
 			}
 		}
 
+		public void Initialise()
+		{
+			for (var i = 1; i < Layers.Length; i++)
+			{
+				var layer = (Layer)Layers[i];
+				layer.Initialise(Layers[i - 1]);
+			}
+		}
+
 		public void Run()
 		{
 			foreach (var layer in Layers)
@@ -41,6 +50,16 @@ namespace ArtificialNeuralNetwork
 		{
 			InputLayer.Load(input);
 			Run();
+		}
+
+		public float TotalError(ITraining training)
+		{
+			Run(training.Inputs);
+			return OutputLayer.Neurons.Combine(training.DesiredOutput).Sum(n =>
+			{
+				var val = 0.5f * (float) Math.Pow(n.lookup - n.source.Value, 2);
+				return val;
+			});
 		}
 
 		public void StochasticGradientDescent(IEnumerable<ITraining> trainingData, int epochCount, int miniBatchSize, int learningRate)
@@ -69,24 +88,25 @@ namespace ArtificialNeuralNetwork
 			{
 				Run(training.Inputs);
 
-				var outcome = OutputLayer.Outputs();
-
-				var nablaBias = new float[Layers.Length][][];
-				var nablaWeight = new float[Layers.Length][];
-
 				// Start at the last layer, progressively moving forward, calculating ∇b and ∇w.
 				for (var i = Layers.Length - 1; i >= 0; i--)
 				{
-					var result = BackPropagate();
+					var layer = Layers[i];
 
-
+					for (var j = 0; j < layer.Neurons.Count; j++)
+					{
+						var neuron = (SigmoidNeuron)layer.Neurons[j];
+						if (i == Layers.Length)
+						{
+							neuron.BackPropagate(training.DesiredOutput[j]);
+						}
+						else
+						{
+							neuron.BackPropagate(Layers[i+1].Neurons.Cast<SigmoidNeuron>());
+						}
+					}
 				}
 			}
-		}
-
-		private void BackPropagate()
-		{
-			
 		}
 	}
 

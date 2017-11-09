@@ -8,30 +8,37 @@ namespace ArtificialNeuralNetwork
 {
 	public class Layer : ILayer
 	{
-		private readonly List<SigmoidNeuron> _neurons = new List<SigmoidNeuron>();
-		public IEnumerable<INeuron> Neurons => _neurons;
+		public List<INeuron> Neurons { get; } = new List<INeuron>();
 
 		public Layer(int size)
 		{
 			for (var i = 0; i < size; i++)
 			{
-				_neurons.Add(new SigmoidNeuron());
+				Neurons.Add(new SigmoidNeuron("x" + i));
 			}
 		}
 
 		public void Run()
 		{
-			foreach (var neuron in _neurons)
+			foreach (var neuron in Neurons)
 			{
-				neuron.ProcessInput();
+				neuron.Update();
 			}
 		}
 
 		public void InitialiseRandom(ILayer previousLayer)
 		{
-			foreach (var neuron in Neurons.Cast<SigmoidNeuron>())
+			foreach (var neuron in Neurons)
 			{
 				neuron.InitialiseRandom(previousLayer.Neurons);
+			}
+		}
+
+		public void Initialise(ILayer previousLayer)
+		{
+			foreach (var neuron in Neurons)
+			{
+				neuron.Initialise(previousLayer.Neurons);
 			}
 		}
 	}

@@ -8,8 +8,11 @@ namespace ArtificialNeuralNetwork
 {
 	public interface INeuron
 	{
-		float Output { get; }
+		float Value { get; set; }
+		string Name { get; set; }
 
-		void ProcessInput();
+		void Update();
+		void InitialiseRandom(IEnumerable<INeuron> inputNeurons);
+		void Initialise(IEnumerable<INeuron> inputNeurons);
 	}
 }

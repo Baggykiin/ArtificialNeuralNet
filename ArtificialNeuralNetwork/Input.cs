@@ -6,18 +6,26 @@ using System.Threading.Tasks;
 
 namespace ArtificialNeuralNetwork
 {
-	class Input
+	public class Input
 	{
-		public INeuron InputNeuron { get; set; }
+		public INeuron Source { get; set; }
+		public INeuron Destination { get; set; }
+
 		public float Weight { get; set; }
 
-		public float Value => InputNeuron.Output;
+		public float Value => Source.Value;
 		public float WeightedValue => Value * Weight;
 
-		public Input(INeuron inputNeuron, float weight)
+		public Input(INeuron source, INeuron destination, float weight)
 		{
-			InputNeuron = inputNeuron;
+			Source = source;
+			Destination = destination;
 			Weight = weight;
+		}
+
+		public override string ToString()
+		{
+			return $"Input(from {Source.Name}, weight: {Weight}, value: {Value})";
 		}
 	}
 }

@@ -5,7 +5,7 @@ namespace ArtificialNeuralNetwork
 {
 	public interface ILayer
 	{
-		IEnumerable<INeuron> Neurons { get; }
+		List<INeuron> Neurons { get; }
 
 		void Run();
 	}

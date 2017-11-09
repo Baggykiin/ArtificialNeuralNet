@@ -1,17 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ArtificialNeuralNetwork
 {
 	public class InputLayer : ILayer
 	{
 		private readonly List<InputNeuron> _neurons = new List<InputNeuron>();
-		public IEnumerable<INeuron> Neurons => _neurons;
+		public List<INeuron> Neurons => _neurons.Cast<INeuron>().ToList();
 
 		public InputLayer(int size)
 		{
 			for (var i = 0; i < size; i++)
 			{
-				_neurons.Add(new InputNeuron());
+				_neurons.Add(new InputNeuron("i" + i));
 			}
 		}
 
@@ -32,7 +33,7 @@ namespace ArtificialNeuralNetwork
 				foreach (var neuron in _neurons)
 				{
 					en.MoveNext();
-					neuron.Output = en.Current;
+					neuron.Value = en.Current;
 				}
 			}
 		}
