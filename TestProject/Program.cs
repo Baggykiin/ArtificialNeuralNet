@@ -34,8 +34,6 @@ namespace TestProject
 			end[1].Bias = 0.60f;
 
 			network.StochasticGradientDescent(1, 1, 0.5f, new Training1());
-
-
 			;
 		}
 	}

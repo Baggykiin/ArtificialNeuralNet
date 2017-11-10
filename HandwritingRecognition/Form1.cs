@@ -16,23 +16,6 @@ namespace HandwritingRecognition
 		public Form1()
 		{
 			InitializeComponent();
-			
-			var parser = new ImageParser();
-			var images = parser.LoadImages("Data/train-images.idx3-ubyte").ToList();
-
-			parser.AttachLabels(images, "Data/train-labels.idx1-ubyte");
-
-			foreach (var i in images)
-			{
-				i.PrepareForTraining();
-			}
-
-			var first = images.First();
-
-			var net = new Network(first.Width * first.Height, 10, 15);
-			net.InitialiseRandom();
-
-			net.StochasticGradientDescent(images, 10, 10, 1);
 		}
 	}
 }

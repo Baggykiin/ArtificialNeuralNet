@@ -12,6 +12,7 @@ namespace ArtificialNeuralNetwork
 		public float Value { get; set; }
 		public float ValueDerivative { get; set; }
 		public float Bias { get; set; }
+		public List<float> NewBiases { get; set; } = new List<float>();
 		public float DeltaNetError { get; set; }
 
 	public string Name { get; set; }
@@ -63,7 +64,6 @@ namespace ArtificialNeuralNetwork
 		public void CalculateError(IEnumerable<SigmoidNeuron> outputNeurons, int inputIndex)
 		{
 			DeltaNetError = outputNeurons.Sum(n => n.DeltaNetError * n.ValueDerivative * n.Inputs[inputIndex].Weight);
-
 			foreach (var input in Inputs)
 			{
 				CalculateError(input);
@@ -92,12 +92,25 @@ namespace ArtificialNeuralNetwork
 			input.RelativeError = deltaError;
 		}
 
+		/// <summary>
+		/// Calculates the new weights for the neuron, based on the error values calculated earlier.
+		/// </summary>
+		/// <param name="eta"></param>
 		public void CalculateNewWeights(float eta)
 		{
 			foreach (var input in Inputs)
 			{
 				input.NewWeights.Add(input.Weight - eta * input.RelativeError);
 			}
+		}
+
+		/// <summary>
+		/// Calculates the new bias for the neuron, based on the error values calculated earlier.
+		/// </summary>
+		public void CalculateNewBias(float eta)
+		{
+			var dne = DeltaNetError * ValueDerivative;
+			NewBiases.Add(Bias - eta * dne);
 		}
 
 		private static float SigmoidFunction(float value)
@@ -112,7 +125,7 @@ namespace ArtificialNeuralNetwork
 
 		public override string ToString()
 		{
-			return $"SigmoidNeuron {Name} (out: {Value:F} - bias: {Bias:F} - in: {Inputs.Count}x)";
+			return $"SigmoidNeuron {Name} (out: {Value:F} - bias: {Bias:F} - in: {Inputs.Count}x) - err: {DeltaNetError:F}";
 		}
 
 		public void ApplyNewWeights()
@@ -121,6 +134,12 @@ namespace ArtificialNeuralNetwork
 			{
 				input.ApplyNewWeights();
 			}
+		}
+
+		public void ApplyNewBiases()
+		{
+			Bias = NewBiases.Average();
+			NewBiases.Clear();
 		}
 	}
 }

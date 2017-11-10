@@ -27,7 +27,6 @@ namespace HandwritingRecognition
 			for (var i = 0; i < imgCount; i++)
 			{
 				var imageData = new byte[rowCount * colCount];
-				Console.WriteLine("");
 				Array.Copy(bytes, offset + (i * imageData.Length), imageData, 0, imageData.Length);
 				
 				yield return new HandwritingImage(colCount, rowCount, imageData);

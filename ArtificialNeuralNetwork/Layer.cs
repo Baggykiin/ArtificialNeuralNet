@@ -42,11 +42,12 @@ namespace ArtificialNeuralNetwork
 			}
 		}
 
-		public void ApplyNewWeights()
+		public void ApplyNewWeightsAndBiases()
 		{
 			foreach (var neuron in Neurons.Cast<SigmoidNeuron>())
 			{
 				neuron.ApplyNewWeights();
+				neuron.ApplyNewBiases();
 			}
 		}
 	}
