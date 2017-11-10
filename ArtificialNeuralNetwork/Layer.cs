@@ -41,5 +41,13 @@ namespace ArtificialNeuralNetwork
 				neuron.Initialise(previousLayer.Neurons);
 			}
 		}
+
+		public void ApplyNewWeights()
+		{
+			foreach (var neuron in Neurons.Cast<SigmoidNeuron>())
+			{
+				neuron.ApplyNewWeights();
+			}
+		}
 	}
 }

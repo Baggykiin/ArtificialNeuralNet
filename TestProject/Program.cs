@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,9 @@ namespace TestProject
 			end[1].Inputs[1].Weight = 0.55f;
 			end[1].Bias = 0.60f;
 
-			var err = network.TotalError(new Training1());
+			network.StochasticGradientDescent(1, 1, 0.5f, new Training1());
+
+
 			;
 		}
 	}

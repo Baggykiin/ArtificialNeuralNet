@@ -12,6 +12,8 @@ namespace ArtificialNeuralNetwork
 		public INeuron Destination { get; set; }
 
 		public float Weight { get; set; }
+		public float RelativeError { get; set; }
+		public List<float> NewWeights { get; set; } = new List<float>();
 
 		public float Value => Source.Value;
 		public float WeightedValue => Value * Weight;
@@ -21,6 +23,13 @@ namespace ArtificialNeuralNetwork
 			Source = source;
 			Destination = destination;
 			Weight = weight;
+		}
+
+		public void ApplyNewWeights()
+		{
+			var avgWeight = NewWeights.Average();
+			Weight = avgWeight;
+			NewWeights.Clear();
 		}
 
 		public override string ToString()

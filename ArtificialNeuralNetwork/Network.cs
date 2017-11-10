@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,22 +53,17 @@ namespace ArtificialNeuralNetwork
 			Run();
 		}
 
-		public float TotalError(ITraining training)
+		public void StochasticGradientDescent(int epochCount, int miniBatchSize, float eta, params ITraining[] trainingData)
 		{
-			Run(training.Inputs);
-			return OutputLayer.Neurons.Combine(training.DesiredOutput).Sum(n =>
-			{
-				var val = 0.5f * (float) Math.Pow(n.lookup - n.source.Value, 2);
-				return val;
-			});
+			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta);
 		}
 
-		public void StochasticGradientDescent(IEnumerable<ITraining> trainingData, int epochCount, int miniBatchSize, int learningRate)
+		public void StochasticGradientDescent(IEnumerable<ITraining> trainingData, int epochCount, int miniBatchSize, float eta)
 		{
-			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, learningRate);
+			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta);
 		}
 
-		public void StochasticGradientDescent(ITraining[] trainingData, int epochCount, int miniBatchSize, int learningRate)
+		public void StochasticGradientDescent(ITraining[] trainingData, int epochCount, int miniBatchSize, float eta)
 		{
 			for (var i = 0; i < epochCount; i++)
 			{
@@ -78,34 +74,42 @@ namespace ArtificialNeuralNetwork
 					miniBatch.Add(trainingData[RngProvider.Current.Next(trainingData.Length)]);
 				}
 				;
-				Train(miniBatch);
+				Train(miniBatch, eta);
 			}
 		}
 
-		private void Train(List<ITraining> miniBatch)
+		private void Train(List<ITraining> miniBatch, float eta)
 		{
 			foreach (var training in miniBatch)
 			{
+				// Feed the training input into the network
 				Run(training.Inputs);
 
-				// Start at the last layer, progressively moving forward, calculating ∇b and ∇w.
-				for (var i = Layers.Length - 1; i >= 0; i--)
+				// Start at the last layer, which is trained using the desired output from our training.
+				for (var i = 0; i < OutputLayer.Neurons.Count; i++)
+				{
+					var neuron = (SigmoidNeuron)OutputLayer.Neurons[i];
+					neuron.CalculateError(training.DesiredOutput[i]);
+					neuron.CalculateNewWeights(eta);
+				}
+				// Now run the hidden layers, which are trained using the data from the previously calculated layer.
+				for (var i = Layers.Length - 2; i > 0; i--)
 				{
 					var layer = Layers[i];
-
 					for (var j = 0; j < layer.Neurons.Count; j++)
 					{
 						var neuron = (SigmoidNeuron)layer.Neurons[j];
-						if (i == Layers.Length)
-						{
-							neuron.BackPropagate(training.DesiredOutput[j]);
-						}
-						else
-						{
-							neuron.BackPropagate(Layers[i+1].Neurons.Cast<SigmoidNeuron>());
-						}
+
+						neuron.CalculateError(Layers[i+1].Neurons.Cast<SigmoidNeuron>(), j);
+						neuron.CalculateNewWeights(eta);
 					}
 				}
+			}
+
+			// Mini batch training complete, now we can apply the newly calculated weights to our neurons.
+			foreach (var layer in Layers.Skip(1).Cast<Layer>())
+			{
+				layer.ApplyNewWeights();
 			}
 		}
 	}
