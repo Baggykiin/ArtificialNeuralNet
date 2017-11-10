@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArtificialNeuralNetwork
@@ -54,24 +55,31 @@ namespace ArtificialNeuralNetwork
 			Run();
 		}
 
-		public void StochasticGradientDescent(int epochCount, int miniBatchSize, float eta, params ITraining[] trainingData)
+		public float[] GetOutput(IEnumerable<float> input)
 		{
-			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta);
+			Run(input);
+			return OutputLayer.Neurons.Select(n => n.Value).ToArray();
 		}
 
-		public void StochasticGradientDescent(IEnumerable<ITraining> trainingData, int epochCount, int miniBatchSize, float eta)
+		public void StochasticGradientDescent(int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null, params ITraining[] trainingData)
 		{
-			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta);
+			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta, validationSet);
 		}
 
-		public void StochasticGradientDescent(ITraining[] trainingData, int epochCount, int miniBatchSize, float eta)
+		public void StochasticGradientDescent(IEnumerable<ITraining> trainingData, int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null)
+		{
+			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta, validationSet);
+		}
+
+		public void StochasticGradientDescent(ITraining[] trainingData, int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null)
 		{
 			Console.WriteLine("Starting stochastic gradient descent training.");
 			Console.WriteLine("---------------------------------------------");
 			Console.WriteLine($"Training set size : {trainingData.Length}");
 			Console.WriteLine($"Number of epochs  : {epochCount}");
 			Console.WriteLine($"Mini-batch size   : {miniBatchSize}");
-			Console.WriteLine($"Learning rate     : {eta}");
+			Console.WriteLine($"Learning rate     : η = {eta:F}");
+			Console.WriteLine($"Validation set    : {(validationSet == null ? "no" : $"yes: ({validationSet.Length} items)")}");
 			Console.WriteLine("---------------------------------------------");
 
 			for (var i = 0; i < epochCount; i++)
@@ -86,9 +94,33 @@ namespace ArtificialNeuralNetwork
 				var results = Train(miniBatch, eta);
 
 				Console.WriteLine($"Epoch #{i:D2}/{epochCount:D2} complete.");
-				Console.WriteLine($" > Avg. error   : {results.Average(r => r.TotalError):F}");
-				Console.WriteLine($" > Success rate : {(results.Count(r => r.Success) / results.Count * 100):F}%");
+				Console.WriteLine($" > Avg. error     : {results.Average(r => r.TotalError):F}");
+				Console.WriteLine($" > Success rate   : {(results.Count(r => r.Success) / (float)results.Count * 100):F}%");
+				if (i % 500 == 0 && validationSet != null)
+				{
+					var validationResult = Validate(validationSet);
+					Console.WriteLine($" > Validation rate : {validationResult * 100:F}%");
+					Thread.Sleep(1000);
+				}
 			}
+		}
+
+		private bool Validate(ITraining validation)
+		{
+			var output = GetOutput(validation.Inputs);
+
+			for (int i = 0; i < output.Length; i++)
+			{
+				var diff = validation.DesiredOutput[i] - output[i];
+				if (diff >= 0.5 || diff <= -0.5f) return false;
+			}
+			return true;
+		}
+
+		private float Validate(ITraining[] validationSet)
+		{
+			var successCount = validationSet.Select(Validate).Count(s => s);
+			return (float)successCount / validationSet.Length;
 		}
 
 		private List<TrainingResult> Train(List<ITraining> miniBatch, float eta)
@@ -123,7 +155,7 @@ namespace ArtificialNeuralNetwork
 				}
 
 				// Let's see how well we did. Save the total output error so we can report it later.
-				var totalError = OutputLayer.Neurons.Cast<SigmoidNeuron>().Sum(n => n.DeltaNetError);
+				var totalError = OutputLayer.Neurons.Cast<SigmoidNeuron>().Sum(n => Math.Abs(n.DeltaNetError));
 				// Now let's see if we managed to actually produce the right output
 				bool success = OutputLayer.Neurons.Cast<SigmoidNeuron>().All(n => Math.Abs(n.DeltaNetError) < 0.5f);
 
@@ -148,6 +180,11 @@ namespace ArtificialNeuralNetwork
 	{
 		public float TotalError { get; set; }
 		public bool Success { get; set; }
+
+		public override string ToString()
+		{
+			return $"TrainingResult(success: {Success}, error: {TotalError:F})";
+		}
 	}
 
 	public interface ITraining
