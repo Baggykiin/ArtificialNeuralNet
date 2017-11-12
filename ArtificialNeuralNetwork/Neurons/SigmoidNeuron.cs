@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ArtificialNeuralNetwork
 {
@@ -15,7 +16,7 @@ namespace ArtificialNeuralNetwork
 		public List<float> NewBiases { get; set; } = new List<float>();
 		public float DeltaNetError { get; set; }
 
-	public string Name { get; set; }
+		public string Name { get; set; }
 
 		public List<Input> Inputs { get; set; }
 

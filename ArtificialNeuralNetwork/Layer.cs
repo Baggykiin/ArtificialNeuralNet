@@ -18,6 +18,11 @@ namespace ArtificialNeuralNetwork
 			}
 		}
 
+		public Layer(IEnumerable<INeuron> neurons)
+		{
+			Neurons = neurons.ToList();
+		}
+
 		public void Run()
 		{
 			foreach (var neuron in Neurons)

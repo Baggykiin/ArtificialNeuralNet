@@ -35,6 +35,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,7 +50,8 @@
   <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ILayer.cs" />
-    <Compile Include="INeuron.cs" />
+    <Compile Include="NetworkSerialiser.cs" />
+    <Compile Include="Neurons\INeuron.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InputLayer.cs" />
     <Compile Include="Neurons\InputNeuron.cs" />
@@ -59,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

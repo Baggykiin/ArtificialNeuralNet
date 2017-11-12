@@ -16,6 +16,11 @@ namespace ArtificialNeuralNetwork
 			}
 		}
 
+		public InputLayer(IEnumerable<InputNeuron> neurons)
+		{
+			_neurons = neurons.ToList();
+		}
+
 		public void Run()
 		{
 			;

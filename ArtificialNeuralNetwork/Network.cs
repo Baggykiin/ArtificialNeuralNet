@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ArtificialNeuralNetwork
 {
 	public class Network
 	{
 		public ILayer[] Layers { get; }
+		[JsonIgnore]
 		public InputLayer InputLayer => (InputLayer)Layers.First();
+		[JsonIgnore]
 		public Layer OutputLayer => (Layer)Layers.Last();
 
 		public Network(int inputSize, int outputSize, params int[] hiddenLayerSizes)
@@ -21,6 +26,12 @@ namespace ArtificialNeuralNetwork
 				((ILayer)new InputLayer(inputSize)).AsEnumerableOfOne()
 				.Concat(hiddenLayerSizes.Select(size => new Layer(size)))
 				.Concat(new Layer(outputSize).AsEnumerableOfOne()).ToArray();
+		}
+
+		public Network(InputLayer inputLayer, IEnumerable<Layer> processingLayers)
+		{
+			Layers = ((ILayer)inputLayer).AsEnumerableOfOne()
+				.Concat(processingLayers).ToArray();
 		}
 
 		public void InitialiseRandom()
@@ -61,17 +72,17 @@ namespace ArtificialNeuralNetwork
 			return OutputLayer.Neurons.Select(n => n.Value).ToArray();
 		}
 
-		public void StochasticGradientDescent(int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null, params ITraining[] trainingData)
+		public MiniBatchResult[] StochasticGradientDescent(int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null, params ITraining[] trainingData)
 		{
-			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta, validationSet);
+			return StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta, validationSet);
 		}
 
-		public void StochasticGradientDescent(IEnumerable<ITraining> trainingData, int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null)
+		public MiniBatchResult[] StochasticGradientDescent(IEnumerable<ITraining> trainingData, int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null)
 		{
-			StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta, validationSet);
+			return StochasticGradientDescent(trainingData.ToArray(), epochCount, miniBatchSize, eta, validationSet);
 		}
 
-		public void StochasticGradientDescent(ITraining[] trainingData, int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null)
+		public MiniBatchResult[] StochasticGradientDescent(ITraining[] trainingData, int epochCount, int miniBatchSize, float eta, ITraining[] validationSet = null)
 		{
 			Console.WriteLine("Starting stochastic gradient descent training.");
 			Console.WriteLine("---------------------------------------------");
@@ -82,6 +93,7 @@ namespace ArtificialNeuralNetwork
 			Console.WriteLine($"Validation set    : {(validationSet == null ? "no" : $"yes: ({validationSet.Length} items)")}");
 			Console.WriteLine("---------------------------------------------");
 
+			var mbResults = new List<MiniBatchResult>();
 			for (var i = 0; i < epochCount; i++)
 			{
 				// Create a new mini-batch by randomly selecting some training data.
@@ -94,15 +106,21 @@ namespace ArtificialNeuralNetwork
 				var results = Train(miniBatch, eta);
 
 				Console.WriteLine($"Epoch #{i:D2}/{epochCount:D2} complete.");
-				Console.WriteLine($" > Avg. error     : {results.Average(r => r.TotalError):F}");
-				Console.WriteLine($" > Success rate   : {(results.Count(r => r.Success) / (float)results.Count * 100):F}%");
+				Console.WriteLine($" > Avg. error      : {results.Average(r => r.TotalError):F}");
+				Console.WriteLine($" > Success rate    : {(results.Count(r => r.Success) / (float)results.Count * 100):F}%");
 				if (i % 500 == 0 && validationSet != null)
 				{
 					var validationResult = Validate(validationSet);
 					Console.WriteLine($" > Validation rate : {validationResult * 100:F}%");
 					Thread.Sleep(1000);
 				}
+				mbResults.Add(new MiniBatchResult
+				{
+					TrainingResults = results.ToArray(),
+
+				});
 			}
+			return mbResults.ToArray();
 		}
 
 		private bool Validate(ITraining validation)
@@ -174,6 +192,11 @@ namespace ArtificialNeuralNetwork
 
 			return results;
 		}
+	}
+
+	public class MiniBatchResult
+	{
+		public TrainingResult[] TrainingResults { get; set; }
 	}
 
 	public class TrainingResult

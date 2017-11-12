@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ArtificialNeuralNetwork
 {
-	class InputNeuron : INeuron
+	public class InputNeuron : INeuron
 	{
 		public float Value { get; set; }
 		public string Name { get; set; }
