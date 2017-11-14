@@ -43,12 +43,16 @@
 			this.resultLabel = new System.Windows.Forms.Label();
 			this.btnImport = new System.Windows.Forms.Button();
 			this.btnExport = new System.Windows.Forms.Button();
+			this.numCorrectNumber = new System.Windows.Forms.NumericUpDown();
+			this.label1 = new System.Windows.Forms.Label();
+			this.btnTrainManual = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.epochCount)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.learningRate)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.miniBatchSize)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.groupBox2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numCorrectNumber)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// textBox1
@@ -193,6 +197,9 @@
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.btnTrainManual);
+			this.groupBox2.Controls.Add(this.label1);
+			this.groupBox2.Controls.Add(this.numCorrectNumber);
 			this.groupBox2.Controls.Add(this.resultLabel);
 			this.groupBox2.Controls.Add(this.pictureBox1);
 			this.groupBox2.Controls.Add(this.button1);
@@ -231,6 +238,31 @@
 			this.btnExport.UseVisualStyleBackColor = true;
 			this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
 			// 
+			// numCorrectNumber
+			// 
+			this.numCorrectNumber.Location = new System.Drawing.Point(159, 339);
+			this.numCorrectNumber.Name = "numCorrectNumber";
+			this.numCorrectNumber.Size = new System.Drawing.Size(85, 29);
+			this.numCorrectNumber.TabIndex = 12;
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(6, 339);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(147, 25);
+			this.label1.TabIndex = 13;
+			this.label1.Text = "Correct number";
+			// 
+			// btnTrainManual
+			// 
+			this.btnTrainManual.Location = new System.Drawing.Point(261, 333);
+			this.btnTrainManual.Name = "btnTrainManual";
+			this.btnTrainManual.Size = new System.Drawing.Size(141, 40);
+			this.btnTrainManual.TabIndex = 14;
+			this.btnTrainManual.Text = "Train";
+			this.btnTrainManual.UseVisualStyleBackColor = true;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
@@ -251,6 +283,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numCorrectNumber)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -273,6 +306,9 @@
 		private System.Windows.Forms.Button btnImport;
 		private System.Windows.Forms.Button btnExport;
 		private System.Windows.Forms.Label resultLabel;
+		private System.Windows.Forms.Button btnTrainManual;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.NumericUpDown numCorrectNumber;
 	}
 }
 

@@ -94,7 +94,7 @@ namespace ArtificialNeuralNetwork
 			Console.WriteLine("---------------------------------------------");
 
 			var mbResults = new List<MiniBatchResult>();
-			for (var i = 0; i < epochCount; i++)
+			for (var i = 1; i <= epochCount; i++)
 			{
 				// Create a new mini-batch by randomly selecting some training data.
 				var miniBatch = new List<ITraining>();
